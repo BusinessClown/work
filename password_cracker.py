@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import hashlib, itertools, time, sys, os
-
+# Check for required files
 print(os.path.exists('passwords.txt'))
 print(os.path.exists('dictionary.txt'))
 
@@ -24,14 +24,13 @@ def crack(password_file):
         h = sha1(pwd)
         if h in hashes and h not in cracked:
             cracked[h] = pwd
-            print(f"[+] SHA-1-HASH {h}: {pwd}")
+            print(f"[+] UserID: {hashes[h]}, SHA-1-HASH {h}: {pwd}")
             del hashes[h]
             if 0 == len(hashes):print("[+] All passwords cracked!")
             return True
         return False
     
-    # Attack 1: Digits 1-8
-    # Make 9 into a 10 to get user 8 password of 000000009 it adds 20 minutes to compute time and 1,000,000,000 attempts
+    # Attack 1: Digits 1-10
     for length in range(1, 11):
         if 0 == len(hashes): break
         for combo in itertools.product('0123456789', repeat=length):
@@ -69,9 +68,9 @@ def crack(password_file):
     print(f"{'='*60}")
     
     with open('cracked_passwords.txt', 'w') as f:
-        f.write("SHA-1-HASH PASSWORD\n")
+        f.write("User ID, SHA-1-HASH, PASSWORD\n")
         for h, pwd in cracked.items():
-            f.write(f"{h} {pwd}\n")
+            f.write(f"{hashes[h]} {h} {pwd}\n")
     print("[+] Results saved to cracked_passwords.txt")
 
 if __name__ == '__main__':
